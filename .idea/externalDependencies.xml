@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="IdeaVIM" />
+    <plugin id="com.jetbrains.kmm" />
+    <plugin id="com.nbadal.ktlint" />
+    <plugin id="com.suusan2go.kotlin-fill-class" />
+    <plugin id="izhangzhihao.rainbow.brackets" />
+    <plugin id="org.jetbrains.compose.desktop.ide" />
+  </component>
+</project>
