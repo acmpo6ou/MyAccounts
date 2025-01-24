@@ -1,3 +1,4 @@
+*.jks
 *.iml
 .kotlin
 .gradle
@@ -17,3 +18,5 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+composeApp/release/*
+composeApp/.attach_pid*
