@@ -9,6 +9,7 @@ import kotlinx.io.bytestring.ByteString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.FileInputStream
 
 class DatabaseRepo(
     private val filesDir: String,
@@ -18,10 +19,11 @@ class DatabaseRepo(
     private val Database.file get() = File("$filesDir/$name.db")
 
     // TODO: creation of a key is slow, cache it somewhere using KeyDataStore?
-    private suspend fun deriveKey(
+    //  getOrPut is pretty useful
+    private suspend fun deriveKeyCipher(
         password: String,
         salt: ByteArray,
-    ): AES.CBC.Key {
+    ): AES.IvCipher {
         val provider = CryptographyProvider.Default
         val secretDerivation = provider.get(PBKDF2).secretDerivation(
             digest = SHA256,
@@ -32,17 +34,35 @@ class DatabaseRepo(
 
         val secret = secretDerivation.deriveSecret(password.toByteArray())
         val decoder = provider.get(AES.CBC).keyDecoder()
-        return decoder.decodeFromByteStringBlocking(AES.Key.Format.RAW, secret)
+        return decoder.decodeFromByteStringBlocking(AES.Key.Format.RAW, secret).cipher()
+    }
+
+    suspend fun openDatabase(database: Database): Accounts {
+        val salt = ByteArray(SALT_LENGTH)
+        val token: ByteArray
+
+        FileInputStream(database.file).use {
+            it.read(salt)
+            token = it.readBytes()
+        }
+
+        val json = deriveKeyCipher(database.password, salt)
+            .decrypt(token)
+            .decodeToString()
+
+        return Json.decodeFromString(json)
     }
 
     suspend fun createDatabase(database: Database) {
         val salt = generateSalt()
-        val key = deriveKey(database.password, salt)
+        val key = deriveKeyCipher(database.password, salt)
 
         val json = Json.encodeToString(database.accounts)
-        val token = key.cipher().encrypt(json.toByteArray())
+        val token = key.encrypt(json.toByteArray())
 
         database.file.createNewFile()
         database.file.writeBytes(salt + token)
     }
+
+    fun deleteDatabase(database: Database) = database.file.delete()
 }
