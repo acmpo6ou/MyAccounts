@@ -19,7 +19,8 @@ class DatabaseRepo(
     private val Database.file get() = File("$filesDir/$name.db")
 
     // TODO: creation of a key is slow, cache it somewhere using KeyDataStore?
-    //  getOrPut is pretty useful
+    //  getOrPut is pretty useful, use `password` as a key, don't use `salt`, for simplicity
+    //  passwords shouldn't be reused for databases anyway
     private suspend fun deriveKeyCipher(
         password: String,
         salt: ByteArray,
@@ -53,6 +54,10 @@ class DatabaseRepo(
         return Json.decodeFromString(json)
     }
 
+    fun closeDatabase(database: Database) {
+        // TODO: remove key from cache
+    }
+
     suspend fun createDatabase(database: Database) {
         val salt = generateSalt()
         val key = deriveKeyCipher(database.password, salt)
@@ -65,4 +70,19 @@ class DatabaseRepo(
     }
 
     fun deleteDatabase(database: Database) = database.file.delete()
+
+    fun renameDatabase(
+        database: Database,
+        newName: String,
+    ) = database.file.renameTo(database.file.parentFile / File(newName))
+
+    suspend fun saveDatabase(
+        oldDatabase: Database,
+        newDatabase: Database,
+    ) {
+        deleteDatabase(oldDatabase)
+        createDatabase(newDatabase)
+    }
 }
+
+operator fun File.div(other: File) = File(this, other.path)
