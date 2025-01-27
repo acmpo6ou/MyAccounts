@@ -90,4 +90,18 @@ class DatabaseRepoTest : BaseTest() {
         assertFalse(oldFile.exists())
         assertTrue(newFile.exists())
     }
+
+    @Test
+    fun `save database`() = runTest {
+        copyDatabase()
+        val oldDatabase = Database("main", "123", TestData.accounts)
+        val newAccounts = mapOf(TestData.account.accountName to TestData.account)
+        val newDatabase = Database("test", "321", newAccounts)
+
+        databaseRepo.saveDatabase(oldDatabase, newDatabase)
+        assertFalse(File("$FILES_DIR_PATH/main.db").exists())
+
+        val accounts = databaseRepo.openDatabase(Database("test", "321"))
+        assertEquals(newAccounts, accounts)
+    }
 }
