@@ -21,7 +21,7 @@ class DatabaseRepo(
     // TODO: creation of a key is slow, cache it somewhere using KeyDataStore?
     //  getOrPut is pretty useful, use `password` as a key, don't use `salt`, for simplicity
     //  passwords shouldn't be reused for databases anyway
-    suspend fun deriveKeyCipher(
+    private suspend fun deriveKeyCipher(
         password: String,
         salt: ByteArray,
     ): AES.IvCipher {
