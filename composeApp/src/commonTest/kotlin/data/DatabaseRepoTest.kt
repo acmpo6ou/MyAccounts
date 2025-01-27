@@ -104,4 +104,20 @@ class DatabaseRepoTest : BaseTest() {
         val accounts = databaseRepo.openDatabase(Database("test", "321"))
         assertEquals(newAccounts, accounts)
     }
+
+    @Test
+    fun `save database when its name didn't change`() = runTest {
+        copyDatabase()
+        val oldDatabase = Database("main", "123", TestData.accounts)
+        val newAccounts = mapOf(TestData.account.accountName to TestData.account)
+        val newDatabase = oldDatabase.copy(accounts = newAccounts)
+
+        // For saveDatabase(), it's important to first delete old database and then create new one,
+        // not the other way around. Because if the name of the database didn't change during saving,
+        // the database file will be removed.
+        databaseRepo.saveDatabase(oldDatabase, newDatabase)
+
+        val accounts = databaseRepo.openDatabase(Database("main", "123"))
+        assertEquals(newAccounts, accounts)
+    }
 }
