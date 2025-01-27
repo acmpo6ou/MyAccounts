@@ -1,7 +1,6 @@
 package data
 
 import io.mockk.MockKAnnotations
-import org.astroboy.myaccounts.data.Account
 import org.junit.Before
 import java.io.File
 
@@ -9,38 +8,6 @@ const val FILES_DIR_PATH = "/tmp/MyAccounts/"
 const val RESOURCE_PATH = "src/commonTest/composeResources/files/"
 
 abstract class BaseTest {
-
-    companion object {
-        val account = Account(
-            accountName = "gmail",
-            username = "Gmail User",
-            email = "example@gmail.com",
-            passwords = mapOf("Password" to "123"),
-            notes = "My gmail account.",
-            copyEmail = false,
-            attachedFiles = mapOf(
-                "file1" to "ZmlsZTEgY29udGVudAo=",
-                "file2" to "ZmlsZTIgY29udGVudAo=",
-            ),
-        )
-
-        val account2 = Account(
-            accountName = "mega",
-            username = "Mega User",
-            email = "example@mega.com",
-            passwords = mapOf("Password" to "312", "Key" to "KOTLIN_CONF_2025"),
-            notes = "My MEGA account.",
-            copyEmail = true,
-            attachedFiles = mapOf(),
-        )
-
-        val accounts = mapOf(
-            account.accountName to account,
-            account2.accountName to account2,
-        )
-
-        val salt = "0123456789abcdef".toByteArray()
-    }
 
     @Before
     fun baseSetup() {

@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.test.runTest
-import myaccounts.composeapp.generated.resources.Res
 import org.astroboy.myaccounts.data.Database
 import org.astroboy.myaccounts.data.DatabaseRepo
 import org.astroboy.myaccounts.data.GenerateSalt
@@ -28,12 +27,12 @@ class DatabaseRepoTest : BaseTest() {
 
     @Before
     fun setup() {
-        every { generateSalt() } returns salt
+        every { generateSalt() } returns TestData.salt
     }
 
     @Test
     fun `create database`() = runTest {
-        val database = Database("main", "123", accounts)
+        val database = Database("main", "123", TestData.accounts)
         databaseRepo.createDatabase(database)
 
         val actual = File(FILES_DIR_PATH, "main.db")
