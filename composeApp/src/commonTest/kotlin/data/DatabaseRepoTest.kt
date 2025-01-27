@@ -39,6 +39,15 @@ class DatabaseRepoTest : BaseTest() {
     }
 
     @Test
+    fun `open database`() = runTest {
+        copyDatabase()
+        val database = Database("main", "123")
+
+        val accounts = databaseRepo.openDatabase(database)
+        assertEquals(TestData.accounts, accounts)
+    }
+
+    @Test
     fun `create database`() = runTest {
         val database = Database("main", "123", TestData.accounts)
         databaseRepo.createDatabase(database)
