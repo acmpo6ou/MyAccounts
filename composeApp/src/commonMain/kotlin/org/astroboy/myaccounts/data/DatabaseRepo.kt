@@ -74,7 +74,7 @@ class DatabaseRepo(
     fun renameDatabase(
         database: Database,
         newName: String,
-    ) = database.file.renameTo(database.file.parentFile / File(newName))
+    ) = database.file.renameTo(database.file.parentFile / File("$newName.db"))
 
     suspend fun saveDatabase(
         oldDatabase: Database,

@@ -67,4 +67,18 @@ class DatabaseRepoTest : BaseTest() {
         databaseRepo.deleteDatabase(Database("main"))
         assertFalse(file.exists())
     }
+
+    @Test
+    fun `rename database`() {
+        copyDatabase()
+        val oldFile = File("$FILES_DIR_PATH/main.db")
+        val newFile = File("$FILES_DIR_PATH/test.db")
+
+        assertTrue(oldFile.exists())
+        assertFalse(newFile.exists())
+
+        databaseRepo.renameDatabase(Database("main"), "test")
+        assertFalse(oldFile.exists())
+        assertTrue(newFile.exists())
+    }
 }
