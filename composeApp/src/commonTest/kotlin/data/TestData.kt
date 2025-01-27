@@ -32,4 +32,7 @@ object TestData {
     )
 
     val salt = "0123456789abcdef".toByteArray()
+
+    @Suppress("ktlint:standard:max-line-length")
+    const val JSON = """{"gmail":{"accountName":"gmail","username":"Gmail User","email":"example@gmail.com","passwords":{"Password":"123"},"notes":"My gmail account.","copyEmail":false,"attachedFiles":{"file1":"ZmlsZTEgY29udGVudAo=","file2":"ZmlsZTIgY29udGVudAo="}},"mega":{"accountName":"mega","username":"Mega User","email":"example@mega.com","passwords":{"Password":"312","Key":"KOTLIN_CONF_2025"},"notes":"My MEGA account.","attachedFiles":{}}}"""
 }

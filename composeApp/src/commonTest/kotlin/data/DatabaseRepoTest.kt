@@ -7,12 +7,13 @@ import kotlinx.coroutines.test.runTest
 import org.astroboy.myaccounts.data.Database
 import org.astroboy.myaccounts.data.DatabaseRepo
 import org.astroboy.myaccounts.data.GenerateSalt
+import org.astroboy.myaccounts.data.SALT_LENGTH
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.junit.Before
 import java.io.File
+import java.io.FileInputStream
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalResourceApi::class)
 class DatabaseRepoTest : BaseTest() {
@@ -35,13 +36,18 @@ class DatabaseRepoTest : BaseTest() {
         val database = Database("main", "123", TestData.accounts)
         databaseRepo.createDatabase(database)
 
-        val actual = File(FILES_DIR_PATH, "main.db")
+        val salt = ByteArray(SALT_LENGTH)
+        val token: ByteArray
 
-        // check if the file even exists,
-        // because assertContentEquals succeeds if both arrays are null
-        assertTrue(actual.exists())
+        FileInputStream(File(FILES_DIR_PATH, "main.db")).use {
+            it.read(salt)
+            token = it.readBytes()
+        }
 
-        val expected = File("$RESOURCE_PATH/main.db").readBytes()
-        assertContentEquals(expected, actual.readBytes())
+        val json = databaseRepo.deriveKeyCipher(database.password, salt)
+            .decrypt(token)
+            .decodeToString()
+
+        assertEquals(TestData.JSON, json)
     }
 }
