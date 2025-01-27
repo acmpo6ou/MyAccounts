@@ -14,10 +14,13 @@ import java.io.File
 import java.io.FileInputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalResourceApi::class)
 class DatabaseRepoTest : BaseTest() {
 
+    @Suppress("unused")
     private val filesDir = FILES_DIR_PATH
 
     @RelaxedMockK
@@ -29,6 +32,10 @@ class DatabaseRepoTest : BaseTest() {
     @Before
     fun setup() {
         every { generateSalt() } returns TestData.salt
+    }
+
+    private fun copyDatabase() {
+        File("$RESOURCE_PATH/main.db").copyTo(File("$FILES_DIR_PATH/main.db"))
     }
 
     @Test
@@ -49,5 +56,15 @@ class DatabaseRepoTest : BaseTest() {
             .decodeToString()
 
         assertEquals(TestData.JSON, json)
+    }
+
+    @Test
+    fun `delete database`() {
+        copyDatabase()
+        val file = File("$FILES_DIR_PATH/main.db")
+        assertTrue(file.exists())
+
+        databaseRepo.deleteDatabase(Database("main"))
+        assertFalse(file.exists())
     }
 }
